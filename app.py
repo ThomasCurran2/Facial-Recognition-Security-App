@@ -1,3 +1,6 @@
+import base64
+import json
+import os
 import re
 import sys
 
@@ -12,6 +15,11 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QMessageBox,
 )
+
+
+# Else go to login page
+# If username and password are good encrypt paswword, put them into a dictionary and save it to the json file, go to login page
+# Login page checks saved credentials against new ones, error message if no match, go to main page if they match
 
 
 class SignUpWindow(QMainWindow):
@@ -37,16 +45,16 @@ class SignUpWindow(QMainWindow):
         self.password_field = QLineEdit()
         self.password_field.setEchoMode(QLineEdit.Password)
 
-        login_button = QPushButton("Sign Up")
-        login_button.clicked.connect(self.login)
+        confirm_button = QPushButton("Sign Up")
+        confirm_button.clicked.connect(self.sign_up)
 
         form_layout.addRow(username_label, self.username_field)
         form_layout.addRow(password_label, self.password_field)
-        form_layout.addRow(login_button)
+        form_layout.addRow(confirm_button)
 
         central_widget.setLayout(form_layout)
 
-    def login(self):
+    def sign_up(self):
         username = self.username_field.text()
         password = self.password_field.text()
 
@@ -69,9 +77,16 @@ class SignUpWindow(QMainWindow):
             QMessageBox.warning(self, "Account creation failed", "Invalid password!")
 
         else:
-            QMessageBox.information(
-                self, "Login Successful", "Welcome, " + username + "!"
-            )
+            encpwd = base64.b64encode(password.encode("utf-8"))
+            encpwd = encpwd.decode()
+            dict = {username: encpwd}
+
+            with open("data.json", "w", encoding="utf-8") as jsonfile:
+                json.dump(dict, jsonfile, ensure_ascii=False)
+
+            self.second_window = LoginWindow()
+            self.second_window.show()
+            self.close()
 
 
 class LoginWindow(QMainWindow):
@@ -79,6 +94,48 @@ class LoginWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Login")
+        self.setGeometry(100, 100, 500, 550)
+
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+
+        form_layout = QFormLayout()
+
+        username_label = QLabel("Username:")
+        self.username_field = QLineEdit()
+
+        password_label = QLabel("Password:")
+        self.password_field = QLineEdit()
+        self.password_field.setEchoMode(QLineEdit.Password)
+
+        confirm_button = QPushButton("Login")
+        confirm_button.clicked.connect(self.login)
+
+        form_layout.addRow(username_label, self.username_field)
+        form_layout.addRow(password_label, self.password_field)
+        form_layout.addRow(confirm_button)
+
+        central_widget.setLayout(form_layout)
+
+    def login(self):
+        username = self.username_field.text()
+        password = self.password_field.text()
+
+        with open("data.json", "r") as openfile:
+            saved_data = json.load(openfile)
+
+        saved_username, saved_pwd = next(iter(saved_data.items()))
+
+        encpwd = base64.b64encode(password.encode("utf-8"))
+        encpwd = encpwd.decode()
+
+        if username != saved_username or encpwd != saved_pwd:
+            QMessageBox.warning(self, "Login failed", "Invalid username or password!")
+
+        else:
+            self.second_window = MainWindow()
+            self.second_window.show()
+            self.close()
 
 
 class MainWindow(QMainWindow):
@@ -96,7 +153,19 @@ class MainWindow(QMainWindow):
 
 app = QApplication(sys.argv)
 
-window = SignUpWindow()
+data_path = "data.json"
+
+if not os.path.exists(data_path):
+    with open(data_path, "w") as fp:
+        pass
+    window = SignUpWindow()
+
+elif os.stat(data_path).st_size == 0:
+    window = SignUpWindow()
+
+else:
+    window = LoginWindow()
+
 window.show()
 
 app.exec()
