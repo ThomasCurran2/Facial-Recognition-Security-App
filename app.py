@@ -17,11 +17,6 @@ from PyQt5.QtWidgets import (
 )
 
 
-# Else go to login page
-# If username and password are good encrypt paswword, put them into a dictionary and save it to the json file, go to login page
-# Login page checks saved credentials against new ones, error message if no match, go to main page if they match
-
-
 class SignUpWindow(QMainWindow):
     def __init__(self):
         super().__init__()
