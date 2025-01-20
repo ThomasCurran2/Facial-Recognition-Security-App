@@ -1,2 +1,23 @@
 # Custom editor settings
 .vscode/
+
+# Virtual enviornment
+.venv/
+
+# Jupyter checkpoint saves
+.ipynb_checkpoints/
+
+# Training checkpoint saves
+training_checkpoints/
+
+# Data used for model training
+data/
+
+# Data used for app functionality, will include in future update
+app_data/
+
+# Dataset used for training
+\lfw.tgz
+
+# Saved model for neural network
+\siamesemodelv2.h5

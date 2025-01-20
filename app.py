@@ -4,6 +4,7 @@ import os
 import re
 import sys
 
+
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import (
     QApplication,
