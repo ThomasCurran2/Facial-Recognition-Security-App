@@ -21,3 +21,6 @@ app_data/
 
 # Saved model for neural network
 \siamesemodelv2.h5
+
+# Cached data
+face_id/__pycache__
