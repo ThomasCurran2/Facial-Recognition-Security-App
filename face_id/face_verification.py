@@ -62,6 +62,28 @@ class FaceVerifier:
         return image
 
 
+class IDUpdater:
+    def update(self, image_array, *args):
+        dir_path = os.path.join("face_id/app_data", "verification_images")
+        # dir_path = os.path.join("face_id/app_data", "test")
+
+        if len(os.listdir(dir_path)) > 0:
+            for filename in os.listdir(dir_path):
+                file_path = os.path.join(dir_path, filename)
+                os.remove(file_path)
+                print(f"Deleted file: {filename}")
+
+        for idx in range(len(image_array)):
+            cv2.imwrite(
+                os.path.join(
+                    "face_id/app_data",
+                    "verification_images",
+                    "verfication_image_" + str(idx) + ".jpg",
+                ),
+                image_array[idx],
+            )
+
+
 class VideoThread(QThread):
     pixmap_signal = Signal(QPixmap)
     image_signal = Signal(np.ndarray)

@@ -18,7 +18,8 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QVBoxLayout,
 )
-from face_id.face_verification import FaceVerifier, VideoThread
+from face_id.face_verification import FaceVerifier, IDUpdater, VideoThread
+from threading import Timer
 
 
 class SignUpWindow(QMainWindow):
@@ -136,6 +137,20 @@ class LoginWindow(QMainWindow):
         if username != saved_username or encpwd != saved_pwd:
             QMessageBox.warning(self, "Login failed", "Invalid username or password!")
 
+        elif not os.path.exists("face_id/app_data"):
+            os.makedirs("face_id/app_data")
+            os.makedirs("face_id/app_data/input_image")
+            os.makedirs("face_id/app_data/verification_images")
+
+            self.second_window = UpdateIDWindow()
+            self.second_window.show()
+            self.close()
+
+        elif len(os.listdir("face_id/app_data/verification_images")) == 0:
+            self.second_window = UpdateIDWindow()
+            self.second_window.show()
+            self.close()
+
         else:
             self.second_window = MainWindow()
             self.second_window.show()
@@ -193,6 +208,112 @@ class VerifyWindow(QMainWindow):
         self.image_label.setPixmap(pix_map)
 
 
+class UpdateIDWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("ID images")
+        self.setGeometry(100, 100, 500, 550)
+
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+
+        self.image_label = QLabel(self)
+
+        self.text_label = QLabel(
+            "ID images are required for this app. Center your face in the image above and click the button to take your picture"
+        )
+
+        self.count_label = QLabel()
+
+        update_button = QPushButton("Update ID images")
+        self.update_obj = IDUpdater()
+        self.image_array = []
+        self.array_idx = 0
+        update_button.clicked.connect(self.confirm_update)
+
+        back_button = QPushButton("back")
+        back_button.clicked.connect(self.open_main_window)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.image_label, alignment=Qt.AlignCenter)
+        vbox.addWidget(self.text_label, alignment=Qt.AlignCenter)
+        vbox.addWidget(self.count_label, alignment=Qt.AlignCenter)
+        vbox.addWidget(update_button)
+        vbox.addWidget(back_button)
+        central_widget.setLayout(vbox)
+
+        self.thread = VideoThread()
+        self.thread.image_signal.connect(self.save_cv_array)
+        self.thread.pixmap_signal.connect(self.update_image)
+        self.thread.start()
+
+    # different naming convention so the thread automatically runs this when closed
+    def closeEvent(self, event):
+        self.thread.stop()
+        event.accept()
+
+    # add delay before update function so that users can move their head before the pics are saved
+    def confirm_update(self):
+        dir_path = os.path.join("face_id/app_data", "verification_images")
+
+        if len(os.listdir(dir_path)) > 0:
+            answer = QMessageBox.question(
+                self,
+                "Confirmation",
+                "This will overwrite your current ID images. Are you sure you want to proceed?",
+                QMessageBox.Yes | QMessageBox.No,
+            )
+
+            if answer == QMessageBox.Yes:
+                self.text_label.setText("Capturing pictures...")
+                for i in range(0, 6):
+                    seconds = 5 - i
+                    self.count_label.setText("Seconds left: " + str(seconds))
+
+                # print("complete")
+                self.text_label.setText("Sucssesfully updated ID images!")
+                self.count_label.setText("")
+                self.update_obj.update(self.image_array)
+
+        else:
+            self.update_obj.update(self.image_array)
+
+    def open_main_window(self):
+        dir_path = os.path.join("face_id/app_data", "verification_images")
+
+        if len(os.listdir(dir_path)) == 0:
+            QMessageBox.warning(
+                self,
+                "Warning",
+                "No ID images found. You must save ID images before exiting!",
+            )
+
+        else:
+            self.second_window = MainWindow()
+            self.second_window.show()
+            self.close()
+
+    @Slot(np.ndarray)
+    def save_cv_array(self, cv_image):
+        if len(self.image_array) < 50:
+            self.image_array.append(cv_image)
+            # self.image_array.append(self.array_idx)
+        else:
+            if self.array_idx > 49:
+                # print("looped array")
+                self.array_idx = 0
+
+            self.image_array[self.array_idx] = cv_image
+            # self.image_array[self.array_idx] = 1
+            # print(self.image_array)
+            self.array_idx += 1
+
+    @Slot(QPixmap)
+    def update_image(self, pix_map):
+        self.image_label.setPixmap(pix_map)
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -208,12 +329,21 @@ class MainWindow(QMainWindow):
         verify_button = QPushButton("Test verification")
         verify_button.clicked.connect(self.open_verify_window)
 
+        update_button = QPushButton("Update ID images")
+        update_button.clicked.connect(self.open_update_window)
+
         form_layout.addRow(verify_button)
+        form_layout.addRow(update_button)
 
         central_widget.setLayout(form_layout)
 
     def open_verify_window(self):
         self.second_window = VerifyWindow()
+        self.second_window.show()
+        self.close()
+
+    def open_update_window(self):
+        self.second_window = UpdateIDWindow()
         self.second_window.show()
         self.close()
 
