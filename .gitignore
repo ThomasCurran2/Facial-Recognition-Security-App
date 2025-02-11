@@ -14,7 +14,7 @@ training_checkpoints/
 data/
 
 # Data used for app functionality, will include in future update
-app_data/
+image_data/
 
 # Dataset used for training
 \lfw.tgz
@@ -24,3 +24,4 @@ app_data/
 
 # Cached data
 face_id/__pycache__
+__pycache__
