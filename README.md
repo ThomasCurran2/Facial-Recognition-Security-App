@@ -34,6 +34,11 @@ To use this app, follow these steps:
 1. Open the project a code editor.
 2. Modify the source code to fit your needs.
 3. Run the app.py file.
+4. Create a username and password.
+5. Login using your username and password.
+6. Add face id images of yourself in the "Update ID images" window.
+7. Add/remove apps that will be protected in the "Manage protected files" window.
+8. Enable monitoring and face recogniton to verify users in the "Enable face verification" window.
 
 Demo Video:
 
@@ -43,19 +48,19 @@ https://github.com/user-attachments/assets/fcd203d2-d295-4eb6-aec2-b32a5cd0a013
 
 1. Sign in and Login page
 <p align="center">
-    <img src = "images/searchBar.PNG" width = 500>
+    <img src = "readme_images/fr_sign_in.png" width = 400> <img src = "readme_images/fr_login.png" width = 400>
   </p>
 2. Saving face id images
 <p align="center">
-  <img src = "images/hints.PNG" width = 300> <img src = "images/resultScreen.PNG" width = 350>
+  <img src = "readme_images/fr_save_images.png" width = 350>
   </p>
 3. Security management
 <p align="center">
-  <img src = "images/toolTip.PNG" width = 700>
+  <img src = "readme_images/fr_manager.png" width = 400> <img src = "readme_images/fr_manager_window.png" width = 400>
   </p>
 4. Face verification
 <p align="center">
-  <img src = "images/popUp.PNG" width = 700>
+  <img src = "readme_images/fr_monitoring.png" width = 500>
  </p>
 
 ## **Reasources**
