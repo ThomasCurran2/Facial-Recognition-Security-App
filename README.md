@@ -42,7 +42,7 @@ To use this app, follow these steps:
 
 Demo Video:
 
-https://github.com/user-attachments/assets/fcd203d2-d295-4eb6-aec2-b32a5cd0a013
+  [![Demo Video](https://img.youtube.com/vi/xfxBACHehOo/0.jpg)](https://www.youtube.com/watch?v=xfxBACHehOo)
 
 ## **Features**
 
