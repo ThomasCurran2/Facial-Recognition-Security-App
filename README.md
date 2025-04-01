@@ -83,7 +83,7 @@ Development on bug fixes are on going and will be added as soon as possible.
 
 ## **License**
 
-Commercile is released under the MIT License. See the **[MIT licensing page](https://tlo.mit.edu/understand-ip/exploring-mit-open-source-license-comprehensive-guide)** for details.
+Facial-Recognition-Security-App is released under the MIT License. See the **[MIT licensing page](https://tlo.mit.edu/understand-ip/exploring-mit-open-source-license-comprehensive-guide)** for details.
 
 ## **Authors and Acknowledgment**
 
